@@ -1,13 +1,15 @@
-import sys
+import argparse
 
-lines = 0
-taken = 0
+parser = argparse.ArgumentParser()
+parser.add_argument("infile", type=str, help="The path to the input file.")
+args = parser.parse_args()
 
-with open(sys.argv[1]) as branch_file:
+with open(args.infile) as branch_file:
+    branches = 0
+    hits = 0
     for i in branch_file:
-        lines += 1
+        branches += 1
         if i.endswith("1\n"):
-            taken += 1
-
-print("Lines:", lines, "\t taken:", taken)
-print("Hit rate: {:4.3f}%".format(taken/lines * 100))
+            hits += 1
+print("Branches: {:d}\nHits: {:d}\nHit rate: {:4.3f}%"
+      .format(branches, hits, hits / branches * 100))
