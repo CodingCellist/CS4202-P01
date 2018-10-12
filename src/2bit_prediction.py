@@ -2,8 +2,8 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--size", type=int, required=True,
-                    help="The size of the file table. Must be 512, 1024, 2048,"
-                         " or 4096.")
+                    help="The size of the address table. Must be 512, 1024,"
+                         " 2048, or 4096.")
 parser.add_argument("infile", type=str, help="The path to the input file.")
 args = parser.parse_args()
 table_size = args.size
