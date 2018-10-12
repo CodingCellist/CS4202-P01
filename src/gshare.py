@@ -1,31 +1,29 @@
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--size", type=int, required=True,
-                    help="The size of the file table. Must be 512, 1024, 2048,"
-                         " or 4096.")
 parser.add_argument("infile", type=str, help="The path to the input file.")
 args = parser.parse_args()
-table_size = args.size
 
-if table_size not in [512, 1024, 2048, 4096]:
-    raise argparse.ArgumentTypeError("size must be one of 512, 1024, 2048, or 4096.")
-
+table_size = 256    # 2^8, because the GR is 8 bits
 
 with open(args.infile) as branch_file:
+    gr = 0
     table = {}
     keys = []
     branches = 0
     hits = 0
     for l in branch_file:
         branches += 1
-        key = int(l.split(' ')[0][-3:])     # get 3 last numbers
+        pc = int(l.split(' ')[0][-3:])
+        taken = int(l.split(' ')[1])
+        gr = (gr << 1) + taken
+        key = gr ^ pc
         if key not in keys:
             if len(keys) == table_size:
                 table.pop(keys[0])
                 keys = keys[1:]
             keys.append(key)
-            table[key] = 3
+            table[key] = 0
         assert len(table) <= table_size
         value = table.get(key)
 
