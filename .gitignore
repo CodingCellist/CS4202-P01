@@ -1,5 +1,7 @@
+/data/
 /raw_input/
 /prog_input/
 /.idea/
 /venv/
 *.swp
+*.pdf

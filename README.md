@@ -8,7 +8,7 @@ prediction techniques, e.g. a 2-bit predictor.
 
 ## Programs Used for Testing
 - [ffmpeg](https://ffmpeg.org/)
-- [libjpeg-turbo](https://libjpeg-turbo.org/) 
+- `jpegtran` (part of [libjpeg-turbo](https://libjpeg-turbo.org/))
 - GNU [tar](https://www.gnu.org/software/tar/)
 - [prime95](https://www.mersenne.org/download/)
 

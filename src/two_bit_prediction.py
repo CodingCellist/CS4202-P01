@@ -1,46 +1,53 @@
 import argparse
-import random
 
 
-def profiled_2(infile, table_size, outfile=None):
+def two_bit_prediction(infile, table_size, outfile=None):
     with open(infile) as branch_file:
-        table = {}      # table :: Dict(String, (Int, Int))   where (Int, Int) is True, Total
+        table = {}
         keys = []
         branches = 0
         hits = 0
-
-        # profiling
         for l in branch_file:
-            key = l.split(' ')[0][-3:]
-            taken = int(l.split(' ')[1])
+            branches += 1
+            key = int(l.split(' ')[0][-3:])     # get 3 last numbers
             if key not in keys:
                 if len(keys) == table_size:
                     table.pop(keys[0])
                     keys = keys[1:]
                 keys.append(key)
-                table[key] = (0, 0)
-            trues, total = table[key]
-            if taken == 1:
-                trues += 1
-            total += 1
-            table[key] = (trues, total)
+                table[key] = 3
+            assert len(table) <= table_size
+            value = table.get(key)
 
-        # go back to start of file and predict
-        branch_file.seek(0)
-        for l in branch_file:
-            branches += 1
-            key = l.split(' ')[0][-3:]
-            if key in keys:                 # if we have the key, use the profiled history
-                trues, total = table[key]
-                if random.random() < (trues / total):
-                    prediction = "1\n"
-                else:
-                    prediction = "0\n"
-            else:                           # otherwise, predict always taken
+            # prediction
+            if value == 3 or value == 2:
                 prediction = "1\n"
-            if l.endswith(prediction):
-                hits += 1
+            elif value == 1 or value == 0:
+                prediction = "0\n"
 
+            # two-bit update
+            if value == 3:
+                if l.endswith(prediction):  # if we are right, i.e. taken
+                    hits += 1
+                else:
+                    table[key] = 2
+            elif value == 2:
+                if l.endswith(prediction):  # if we are right, i.e. taken
+                    hits += 1
+                    table[key] = 3
+                else:
+                    table[key] = 0
+            elif value == 1:
+                if l.endswith(prediction):  # if we are right, i.e. not taken
+                    hits += 1
+                    table[key] = 0
+                else:
+                    table[key] = 3
+            elif value == 0:
+                if l.endswith(prediction):  # if we are right, i.e. not taken
+                    hits += 1
+                else:
+                    table[key] = 1
         hit_rate = hits / branches
         if outfile is None:
             print("Branches: {:d}\nHits: {:d}\nHit rate: {:4.3f}%"
@@ -48,7 +55,7 @@ def profiled_2(infile, table_size, outfile=None):
         else:
             with open(outfile, mode='a') as csvfile:
                 csvfile.write('"{:s}-{:d}",{:.3f}\n'
-                              .format('profiled-2', table_size, hit_rate * 100))
+                              .format('2-bit', table_size, hit_rate * 100))
 
 
 if __name__ == '__main__':
@@ -69,4 +76,4 @@ if __name__ == '__main__':
         if not args.outfile.endswith(".csv"):
             raise argparse.ArgumentTypeError("The output must be a .csv file.")
 
-    profiled_2(args.infile, args.size, outfile=args.outfile)
+    two_bit_prediction(args.infile, args.size, outfile=args.outfile)
