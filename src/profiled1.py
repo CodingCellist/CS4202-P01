@@ -1,7 +1,7 @@
 import argparse
 
 
-def profiled_1(infile, table_size, outfile=None):
+def profiled_1(infile, table_size, outfile=None, lock=None):
     with open(infile) as branch_file:
         table = {}
         keys = []
@@ -45,9 +45,16 @@ def profiled_1(infile, table_size, outfile=None):
             print("Branches: {:d}\nHits: {:d}\nHit rate: {:4.3f}%"
                   .format(branches, hits, hit_rate * 100))
         else:
-            with open(outfile, mode='a') as csvfile:
-                csvfile.write('"{:s}-{:d}",{:.3f}\n'
-                              .format('profiled-1', table_size, hit_rate * 100))
+            if lock is not None:
+                lock.acquire()
+                with open(outfile, mode='a') as csvfile:
+                    csvfile.write('"{:s}-{:d}",{:.3f}\n'
+                                  .format('profiled-1', table_size, hit_rate * 100))
+                lock.release()
+            else:
+                with open(outfile, mode='a') as csvfile:
+                    csvfile.write('"{:s}-{:d}",{:.3f}\n'
+                                  .format('profiled-1', table_size, hit_rate * 100))
 
 
 if __name__ == '__main__':
@@ -61,9 +68,7 @@ if __name__ == '__main__':
     parser.add_argument("infile", type=str, help="The path to the input file.")
     args = parser.parse_args()
 
-    table_size = args.size
-
-    if table_size not in [512, 1024, 2048, 4096]:
+    if args.size not in [512, 1024, 2048, 4096]:
         raise argparse.ArgumentTypeError(
             "size must be one of 512, 1024, 2048, or 4096.")
     if args.outfile is not None:
