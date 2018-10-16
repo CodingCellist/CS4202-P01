@@ -15,23 +15,29 @@ def gen_data(dirpath, outfile, nThreads=1):
         manager = mp.Manager()
         lock = manager.Lock()
         with open(outfile, mode='a') as csvfile:
-            csvfile.write('file,predictor,accuracy\n')
+            csvfile.write('set,predictor,accuracy\n')
+        i = 0
+        setnumb = 0
         for f in sorted(os.listdir(dirpath)):
+            if i == 10:
+                i = 0
+                setnumb += 1
             infile = dirpath + f
             executor.submit(fn=always_taken,
-                            infile=infile, outfile=outfile, lock=lock)
+                            infile=infile, outfile=outfile, lock=lock, setnumb=setnumb)
             executor.submit(fn=gshare,
-                            infile=infile, outfile=outfile, lock=lock)
+                            infile=infile, outfile=outfile, lock=lock, setnumb=setnumb)
             for table_size in [512, 1024, 2048, 4096]:
                 executor.submit(fn=two_bit_prediction,
                                 infile=infile, table_size=table_size,
-                                outfile=outfile, lock=lock)
+                                outfile=outfile, lock=lock, setnumb=setnumb)
                 executor.submit(fn=profiled_1,
                                 infile=infile, table_size=table_size,
-                                outfile=outfile, lock=lock)
+                                outfile=outfile, lock=lock, setnumb=setnumb)
                 executor.submit(fn=profiled_2,
                                 infile=infile, table_size=table_size,
-                                outfile=outfile, lock=lock)
+                                outfile=outfile, lock=lock, setnumb=setnumb)
+            i += 1
 
 
 if __name__ == '__main__':

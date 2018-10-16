@@ -1,7 +1,7 @@
 import argparse
 
 
-def gshare(infile, outfile=None, lock=None):
+def gshare(infile, outfile=None, lock=None, setnumb=0):
     table_size = 256    # 2^8, because the GR is 8 bits
     with open(infile) as branch_file:
         gr = 0
@@ -61,13 +61,13 @@ def gshare(infile, outfile=None, lock=None):
             if lock is not None:
                 lock.acquire()
                 with open(outfile, mode='a') as csvfile:
-                    csvfile.write('"{:s}","{:s}",{:.3f}\n'
-                                  .format(infile, 'gshare', hit_rate * 100))
+                    csvfile.write('{:d},"{:s}",{:.3f}\n'
+                                  .format(setnumb, 'gshare', hit_rate * 100))
                 lock.release()
             else:
                 with open(outfile, mode='a') as csvfile:
-                    csvfile.write('"{:s}","{:s}",{:.3f}\n'
-                                  .format(infile, 'gshare', hit_rate * 100))
+                    csvfile.write('{:d},"{:s}",{:.3f}\n'
+                                  .format(setnumb, 'gshare', hit_rate * 100))
 
 
 if __name__ == '__main__':

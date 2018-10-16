@@ -1,7 +1,7 @@
 import argparse
 
 
-def always_taken(infile, outfile=None, lock=None):
+def always_taken(infile, outfile=None, lock=None, setnumb=0):
     with open(infile) as branch_file:
         branches = 0
         hits = 0
@@ -17,13 +17,13 @@ def always_taken(infile, outfile=None, lock=None):
         if lock is not None:
             lock.acquire()
             with open(outfile, mode='a') as csvfile:
-                csvfile.write('"{:s}","{:s}",{:.3f}\n'
-                              .format(infile, 'always-taken', hit_rate * 100))
+                csvfile.write('{:d},"{:s}",{:.3f}\n'
+                              .format(setnumb, 'always-taken', hit_rate * 100))
             lock.release()
         else:
             with open(outfile, mode='a') as csvfile:
-                csvfile.write('"{:s}","{:s}",{:.3f}\n'
-                              .format(infile, 'always-taken', hit_rate * 100))
+                csvfile.write('{:d},"{:s}",{:.3f}\n'
+                              .format(setnumb, 'always-taken', hit_rate * 100))
 
 
 if __name__ == '__main__':

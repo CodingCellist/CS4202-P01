@@ -2,7 +2,7 @@ import argparse
 import random
 
 
-def profiled_2(infile, table_size, outfile=None, lock=None):
+def profiled_2(infile, table_size, outfile=None, lock=None, setnumb=0):
     with open(infile) as branch_file:
         table = {}      # table :: Dict(String, (Int, Int))   where (Int, Int) is True, Total
         keys = []
@@ -49,13 +49,13 @@ def profiled_2(infile, table_size, outfile=None, lock=None):
             if lock is not None:
                 lock.acquire()
                 with open(outfile, mode='a') as csvfile:
-                    csvfile.write('"{:s}","{:s}-{:d}",{:.3f}\n'
-                                  .format(infile, 'profiled-2', table_size, hit_rate * 100))
+                    csvfile.write('{:d},"{:s}-{:d}",{:.3f}\n'
+                                  .format(setnumb, 'profiled-2', table_size, hit_rate * 100))
                 lock.release()
             else:
                 with open(outfile, mode='a') as csvfile:
-                    csvfile.write('"{:s}","{:s}-{:d}",{:.3f}\n'
-                                  .format(infile, 'profiled-2', table_size, hit_rate * 100))
+                    csvfile.write('{:d},"{:s}-{:d}",{:.3f}\n'
+                                  .format(setnumb, 'profiled-2', table_size, hit_rate * 100))
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 import argparse
 
 
-def two_bit_prediction(infile, table_size, outfile=None, lock=None):
+def two_bit_prediction(infile, table_size, outfile=None, lock=None, setnumb=0):
     with open(infile) as branch_file:
         table = {}
         keys = []
@@ -56,13 +56,13 @@ def two_bit_prediction(infile, table_size, outfile=None, lock=None):
             if lock is not None:
                 lock.acquire()
                 with open(outfile, mode='a') as csvfile:
-                    csvfile.write('"{:s}","{:s}-{:d}",{:.3f}\n'
-                                  .format(infile, '2-bit', table_size, hit_rate * 100))
+                    csvfile.write('{:d},"{:s}-{:d}",{:.3f}\n'
+                                  .format(setnumb, '2-bit', table_size, hit_rate * 100))
                 lock.release()
             else:
                 with open(outfile, mode='a') as csvfile:
-                    csvfile.write('"{:s}","{:s}-{:d}",{:.3f}\n'
-                                  .format(infile, '2-bit', table_size, hit_rate * 100))
+                    csvfile.write('{:d},"{:s}-{:d}",{:.3f}\n'
+                                  .format(setnumb, '2-bit', table_size, hit_rate * 100))
 
 
 if __name__ == '__main__':
