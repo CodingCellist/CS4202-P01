@@ -49,13 +49,13 @@ def profiled_2(infile, table_size, outfile=None, lock=None):
             if lock is not None:
                 lock.acquire()
                 with open(outfile, mode='a') as csvfile:
-                    csvfile.write('"{:s}-{:d}",{:.3f}\n'
-                                  .format('profiled-2', table_size, hit_rate * 100))
+                    csvfile.write('"{:s}","{:s}-{:d}",{:.3f}\n'
+                                  .format(infile, 'profiled-2', table_size, hit_rate * 100))
                 lock.release()
             else:
                 with open(outfile, mode='a') as csvfile:
-                    csvfile.write('"{:s}-{:d}",{:.3f}\n'
-                                  .format('profiled-2', table_size, hit_rate * 100))
+                    csvfile.write('"{:s}","{:s}-{:d}",{:.3f}\n'
+                                  .format(infile, 'profiled-2', table_size, hit_rate * 100))
 
 
 if __name__ == '__main__':

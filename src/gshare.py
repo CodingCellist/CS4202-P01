@@ -13,7 +13,7 @@ def gshare(infile, outfile=None, lock=None):
             branches += 1
             pc = int(l.split(' ')[0][-3:])
             taken = int(l.split(' ')[1])
-            gr = (gr << 1) + taken
+            gr = ((gr << 1) + taken) & (2**8 - 1)
             key = gr ^ pc
             if key not in keys:
                 if len(keys) == table_size:
@@ -61,13 +61,13 @@ def gshare(infile, outfile=None, lock=None):
             if lock is not None:
                 lock.acquire()
                 with open(outfile, mode='a') as csvfile:
-                    csvfile.write('"{:s}",{:.3f}\n'
-                                  .format('gshare', hit_rate * 100))
+                    csvfile.write('"{:s}","{:s}",{:.3f}\n'
+                                  .format(infile, 'gshare', hit_rate * 100))
                 lock.release()
             else:
                 with open(outfile, mode='a') as csvfile:
-                    csvfile.write('"{:s}",{:.3f}\n'
-                                  .format('gshare', hit_rate * 100))
+                    csvfile.write('"{:s}","{:s}",{:.3f}\n'
+                                  .format(infile, 'gshare', hit_rate * 100))
 
 
 if __name__ == '__main__':

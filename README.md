@@ -10,5 +10,4 @@ prediction techniques, e.g. a 2-bit predictor.
 - [ffmpeg](https://ffmpeg.org/)
 - `jpegtran` (part of [libjpeg-turbo](https://libjpeg-turbo.org/))
 - GNU [tar](https://www.gnu.org/software/tar/)
-- [prime95](https://www.mersenne.org/download/)
-
+- my sudoku-solver written as part of CS2002

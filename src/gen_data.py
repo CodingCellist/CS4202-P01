@@ -15,7 +15,7 @@ def gen_data(dirpath, outfile, nThreads=1):
         manager = mp.Manager()
         lock = manager.Lock()
         with open(outfile, mode='a') as csvfile:
-            csvfile.write('predictor,accuracy\n')
+            csvfile.write('file,predictor,accuracy\n')
         for f in sorted(os.listdir(dirpath)):
             infile = dirpath + f
             executor.submit(fn=always_taken,
