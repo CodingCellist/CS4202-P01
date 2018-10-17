@@ -5,15 +5,12 @@ import matplotlib.pyplot as plt
 from math import ceil
 
 
-def savefig(figure, directory, infile, figname):
+def savefig(figure, directory, figname):
     if directory.endswith('/'):
-        file_path = "{:s}{:s}-{:s}.png"
+        file_path = "{:s}{:s}.png"
     else:
-        file_path = "{:s}/{:s}-{:s}.png"
-    if '/' in infile:
-        infile = infile.split('/')[-1]
-    infile = infile.split('.')[0]
-    file_path = file_path.format(directory, infile,
+        file_path = "{:s}/{:s}.png"
+    file_path = file_path.format(directory,
                                  figname.replace(' ', '-')
                                  .replace('\'', '')
                                  .replace('(', '')
@@ -54,18 +51,21 @@ def make_plot(infile, outdir=None):
         set_data_cols = set_data_unstk.copy()
         set_data_cols.columns = set_data_unstk.columns.droplevel(level=0)
 
-        # plot the set-wise data with error-bars
+        # constant parts of the plots
         ylabel = "Accuracy (%)"
+        program = "[{:s}]".format((infile.split('/')[-1]).split('.')[0])
+
+        # plot the set-wise data with error-bars
         plt.figure(1)
         fig, ax = plt.subplots()
         set_data_cols.plot(fmt='.', yerr=set_std_cols, ax=ax)
-        title = "Set-wise Accuracy"
+        title = program + " Set-wise Accuracy"
         plt.title(title)
         plt.ylabel(ylabel, rotation=90)
         ax.legend(loc='lower left', bbox_to_anchor=(1.01, 0))
         plt.tight_layout()
         if outdir is not None:
-            savefig(fig, outdir, infile, title)
+            savefig(fig, outdir, title)
 
         # plot the set-wise data, excluding 'always-taken' for a smaller y-scale
         set_data_excl_at = set_data_cols.drop('always-taken', axis=1)
@@ -73,24 +73,24 @@ def make_plot(infile, outdir=None):
         plt.figure(2)
         fig, ax = plt.subplots()
         set_data_excl_at.plot(fmt='.', yerr=set_std_excl_at, ax=ax)
-        title = "Set-wise Accuracy (excluding 'always-taken')"
+        title = program + " Set-wise Accuracy (excluding 'always-taken')"
         plt.title(title)
         plt.ylabel(ylabel, rotation=90)
         ax.legend(loc='lower left', bbox_to_anchor=(1.01, 0))
         plt.tight_layout()
         if outdir is not None:
-            savefig(fig, outdir, infile, title)
+            savefig(fig, outdir, title)
 
         # plot the 'total' data, i.e. the data across all the sets
         plt.figure(3)
         fig, ax = plt.subplots()
         df_total_mean.plot.bar(yerr=df_total_std, ax=ax)
-        title = "Average Accuracy for all Predictors"
+        title = program + " Average Accuracy for all Predictors"
         plt.title(title)
         plt.ylabel(ylabel, rotation=90)
         plt.tight_layout()
         if outdir is not None:
-            savefig(fig, outdir, infile, title)
+            savefig(fig, outdir, title)
 
         # plot the 'total' data, excluding 'always-taken' for a smaller y-scale
         excl_at = df_total_mean.drop('always-taken', axis=0)
@@ -100,14 +100,14 @@ def make_plot(infile, outdir=None):
         plt.figure(4)
         fig, ax = plt.subplots()
         excl_at.plot.bar(yerr=df_total_std.drop('always-taken', axis=0), ax=ax)
-        title = "Average Accuracy for all Predictors (excluding 'always-taken')"
+        title = program + " Average Accuracy for all Predictors (excluding 'always-taken')"
         plt.ylim([ceil(y_low - y_margin),
                   100])
         plt.title(title)
         plt.ylabel(ylabel, rotation=90)
         plt.tight_layout()
         if outdir is not None:
-            savefig(fig, outdir, infile, title)
+            savefig(fig, outdir, title)
 
         # if we haven't saved the plots, show them
         if outdir is None:

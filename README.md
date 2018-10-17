@@ -9,5 +9,4 @@ prediction techniques, e.g. a 2-bit predictor.
 ## Programs Used for Testing
 - [ffmpeg](https://ffmpeg.org/)
 - `jpegtran` (part of [libjpeg-turbo](https://libjpeg-turbo.org/))
-- GNU [tar](https://www.gnu.org/software/tar/)
 - my sudoku-solver written as part of CS2002
