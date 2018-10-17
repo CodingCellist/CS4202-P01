@@ -3,6 +3,9 @@
 /prog_input/
 /.idea/
 /venv/
+*/__pycache__/
+/CS2002_P03/
 *.swp
 *.pdf
 *.tar.gz
+*.sh

@@ -10,8 +10,8 @@ from profiled1 import profiled_1
 from profiled2 import profiled_2
 
 
-def gen_data(dirpath, outfile, nThreads=1):
-    with ProcessPoolExecutor(max_workers=nThreads) as executor:
+def gen_data(dirpath, outfile, n_threads=1, set_size=10):
+    with ProcessPoolExecutor(max_workers=n_threads) as executor:
         manager = mp.Manager()
         lock = manager.Lock()
         with open(outfile, mode='a') as csvfile:
@@ -19,7 +19,7 @@ def gen_data(dirpath, outfile, nThreads=1):
         i = 0
         setnumb = 0
         for f in sorted(os.listdir(dirpath)):
-            if i == 10:
+            if i == set_size:
                 i = 0
                 setnumb += 1
             infile = dirpath + f
@@ -48,10 +48,16 @@ if __name__ == '__main__':
                         help="The file to output the result to. Must be a CSV"
                              " file.")
     parser.add_argument("-t", "--threads", type=int, default=1,
-                        help="The maximum number of threads to use.")
+                        help="The maximum number of threads to use. Default is 1.")
+    parser.add_argument("--setsize", type=int, default=10,
+                        help="The number of files in a set (if multiple files"
+                             " were generated per input). Default is 10.")
     args = parser.parse_args()
 
     if not args.outfile.endswith(".csv"):
-        raise argparse.ArgumentTypeError("The output must be a .csv file.")
+        raise argparse.ArgumentTypeError("The output file must be a .csv file.")
+    if not args.setsize >= 0:
+        raise argparse.ArgumentTypeError("The setsize must be >= 0.")
 
-    gen_data(args.dirpath, args.outfile, nThreads=args.threads)
+    gen_data(args.dirpath, args.outfile,
+             n_threads=args.threads, set_size=args.setsize)
