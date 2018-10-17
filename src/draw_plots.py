@@ -18,7 +18,7 @@ def savefig(figure, directory, figname):
     figure.savefig(file_path)
 
 
-def make_plot(infile, outdir=None):
+def make_plot(infile, sem, outdir=None):
     with open(infile) as csvfile:
         # load the data
         df = pd.read_csv(csvfile)
@@ -26,18 +26,25 @@ def make_plot(infile, outdir=None):
         # index the dataframe
         df_multindex = df.set_index(['predictor', 'set'])
 
-        # calculate the standard deviation for each set
-        df_set_std = df_multindex.groupby(['predictor', 'set']).std()
+        # calculate the standard deviation or error mean for each set
+        if sem:
+            df_set_std = df_multindex.groupby(['predictor', 'set']).sem()
+        else:
+            df_set_std = df_multindex.groupby(['predictor', 'set']).std()
 
         # calculate the mean of the sets and the mean across the sets
         df_set_mean = df_multindex.groupby(['predictor', 'set']).mean()
 
-        # calculate the 'total' standard deviation, i.e. the standard deviation
-        # across all the samples, regardless of the set
-        df_total_std = df_multindex.groupby(['predictor']).std()
+        # calculate the 'total' standard deviation or error mean, i.e. the
+        # standard deviation or mean error of all the samples, across all the
+        # sets
+        if sem:
+            df_total_std = df_multindex.groupby(['predictor']).sem()
+        else:
+            df_total_std = df_multindex.groupby(['predictor']).std()
 
         # calculate the 'total' mean, i.e. the mean across all the samples,
-        # regardless of the set
+        # and all the sets
         df_total_mean = df_multindex.groupby(['predictor']).mean()
 
         # 'rearrange' the dataframes so that the predictor names are columns
@@ -118,14 +125,24 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("infile", type=str,
                         help="The path to the csv-file containing the data.")
+    parser.add_argument("--sem", action='store_true', dest='sem',
+                        help="Use Standard Error Mean for error-bars."
+                             " [Note: either --sem OR --std must be used]")
+    parser.add_argument("--std", action='store_true', dest='std',
+                        help="Use Standard Deviation for error-bars."
+                             " [Note: either --sem OR --std must be used]")
+    parser.set_defaults(sem=False)
+    parser.set_defaults(std=False)
     parser.add_argument("-o", "--outdir", type=str, default=None,
                         help="The path to the directory to save the plots to.")
     args = parser.parse_args()
 
     if not args.infile.endswith(".csv"):
         raise argparse.ArgumentTypeError("infile must be a .csv-file")
+    if not args.sem ^ args.std:
+        raise argparse.ArgumentTypeError("please pass --sem OR --std")
     if args.outdir is not None:
         if not path.isdir(args.outdir):
             raise argparse.ArgumentTypeError("-d/--outdir must be the path to a directory")
 
-    make_plot(args.infile, outdir=args.outdir)
+    make_plot(args.infile, args.sem, outdir=args.outdir)
