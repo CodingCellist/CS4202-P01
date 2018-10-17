@@ -7,9 +7,9 @@ from math import ceil
 
 def savefig(figure, directory, infile, figname):
     if directory.endswith('/'):
-        file_path = "{:s}{:s}_{:s}.png"
+        file_path = "{:s}{:s}-{:s}.png"
     else:
-        file_path = "{:s}/{:s}_{:s}.png"
+        file_path = "{:s}/{:s}-{:s}.png"
     if '/' in infile:
         infile = infile.split('/')[-1]
     infile = infile.split('.')[0]
